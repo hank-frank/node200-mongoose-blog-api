@@ -32,28 +32,16 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   let dbUser = null;
-  // Fetch the user from the database
   User
     .findById(req.body.author)
     .then(user => {
-      // Store the fetched user in the higer scope variable
       dbUser = user;
-
-      // Create a blog
       const newBlog = new Blog(req.body);
-
-      // Bind the user to it
       newBlog.author = user._id;
-
-      // Save it to the database
       return newBlog.save();
     })
     .then(blog => {
-      // Push the saved blog to the array of blogs associated with the user
       dbUser.blogs.push(blog);
-
-      // Save the user back to the database and respond to the original HTTP
-      // request with a copy of the newly created blog
       dbUser
         .save()
         .then(() => res.status(201).json(blog))
